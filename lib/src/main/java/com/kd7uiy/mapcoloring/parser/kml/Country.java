@@ -2,7 +2,6 @@ package com.kd7uiy.mapcoloring.parser.kml;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +20,11 @@ public class Country implements Parcelable {
             country.name = source.readString();
 
             int borderCount = source.readInt();
-            country.borders = new ArrayList<List<LatLng>>();
+            country.borders = new ArrayList<List<Point>>();
 
             for (int i = 0; i < borderCount; ++i) {
                 @SuppressWarnings("unchecked")
-                List<LatLng> border = source.readArrayList(LatLng.class
+                List<Point> border = source.readArrayList(Point.class
                         .getClassLoader());
                 country.borders.add(border);
             }
@@ -35,7 +34,7 @@ public class Country implements Parcelable {
 
     public String name;
 
-    public List<List<LatLng>> borders;
+    public List<List<Point>> borders;
 
     @Override
     public int describeContents() {
@@ -47,7 +46,7 @@ public class Country implements Parcelable {
         dest.writeString(name);
         dest.writeInt(borders.size());
 
-        for (List<LatLng> border : borders) {
+        for (List<Point> border : borders) {
             dest.writeList(border);
         }
     }

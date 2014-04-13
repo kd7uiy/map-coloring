@@ -2,7 +2,6 @@ package com.kd7uiy.mapcoloring.parser.kml;
 
 import android.util.Log;
 import android.util.Xml;
-import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -118,17 +117,17 @@ public class KmlParser {
         return name;
     }
 
-    private List<List<LatLng>> parseBorder(XmlPullParser parser)
+    private List<List<Point>> parseBorder(XmlPullParser parser)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "MultiGeometry");
         parser.next();
         parser.require(XmlPullParser.START_TAG, null, "Point");
         skip(parser);
 
-        List<List<LatLng>> borders = new ArrayList<List<LatLng>>();
+        List<List<Point>> borders = new ArrayList<List<Point>>();
         while (parser.next() == XmlPullParser.START_TAG
                 && "Polygon".equals(parser.getName())) {
-            List<LatLng> border = parsePolygon(parser);
+            List<Point> border = parsePolygon(parser);
             borders.add(border);
         }
         parser.require(XmlPullParser.END_TAG, null, "MultiGeometry");
@@ -136,7 +135,7 @@ public class KmlParser {
         return borders;
     }
 
-    private List<LatLng> parsePolygon(XmlPullParser parser)
+    private List<Point> parsePolygon(XmlPullParser parser)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "Polygon");
         parser.next();
@@ -144,7 +143,7 @@ public class KmlParser {
         parser.next();
         parser.require(XmlPullParser.START_TAG, null, "LinearRing");
         parser.next();
-        List<LatLng> border = parseCoordinates(parser);
+        List<Point> border = parseCoordinates(parser);
         parser.next();
         parser.require(XmlPullParser.END_TAG, null, "LinearRing");
         parser.next();
@@ -158,18 +157,18 @@ public class KmlParser {
         return border;
     }
 
-    private List<LatLng> parseCoordinates(XmlPullParser parser)
+    private List<Point> parseCoordinates(XmlPullParser parser)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "coordinates");
         String borderStr = parseText(parser);
         parser.require(XmlPullParser.END_TAG, null, "coordinates");
-        List<LatLng> border = new ArrayList<LatLng>();
+        List<Point> border = new ArrayList<Point>();
         String[] coordsStrs = borderStr.split(" ");
         for (String coordsStr : coordsStrs) {
+            Point point = new Point();
             String[] coords = coordsStr.split(",");
-            double longitude = Double.parseDouble(coords[0]);
-            double latitude = Double.parseDouble(coords[1]);
-            LatLng point = new LatLng(latitude, longitude);
+            point.longitude = Double.parseDouble(coords[0]);
+            point.latitude = Double.parseDouble(coords[1]);
             border.add(point);
         }
 
